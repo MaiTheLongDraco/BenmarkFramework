@@ -1,0 +1,15 @@
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.csproj.AssemblyReference.cache
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.AssemblyInfoInputs.cache
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.AssemblyInfo.cs
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.csproj.CoreCompileInputs.cache
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\bin\Debug\net8.0\Perf.Net.deps.json
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\bin\Debug\net8.0\Perf.Net.dll
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\bin\Debug\net8.0\Perf.Net.pdb
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\bin\Debug\net8.0\Perf.Core.dll
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\bin\Debug\net8.0\Perf.Core.pdb
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.csproj.Up2Date
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.dll
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\refint\Perf.Net.dll
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.pdb
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\ref\Perf.Net.dll

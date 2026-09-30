@@ -1,0 +1,1700 @@
+Bạn là Principal Software Architect + Performance Engineer + .NET Runtime Engineer + Unity Performance Engineer.
+
+Nhiệm vụ của bạn là THIẾT KẾ VÀ IMPLEMENT hoàn chỉnh một reusable Performance / Benchmark / Profiling / Tracing Framework có thể dùng xuyên suốt nhiều loại hệ thống:
+
+- .NET / C#
+- Unity
+- ASP.NET Core
+- Console / Worker Service
+- SQL / MySQL / PostgreSQL / SQL Server
+- HTTP / REST API
+- Redis
+- File I/O
+- Network I/O
+- Thread
+- ThreadPool
+- Task / async / await
+- Lock / Monitor
+- SemaphoreSlim
+- Channel<T>
+- Concurrent collections
+- Unity AsyncOperation
+- Addressables
+- AssetBundle
+- GC / allocation
+- CPU-bound workloads
+- I/O-bound workloads
+- Microservices
+
+Mục tiêu KHÔNG phải tạo một Stopwatch wrapper đơn giản.
+
+Mục tiêu là tạo một PERFORMANCE INSTRUMENTATION PLATFORM nhỏ gọn, extensible, low-overhead, có khả năng:
+
+1. đo performance;
+2. tạo hierarchical trace;
+3. tự động tạo child operations;
+4. thống kê latency;
+5. đo allocation / GC;
+6. phân biệt CPU time và wall-clock time khi khả thi;
+7. phân tích async / await;
+8. theo dõi wait time;
+9. instrument framework operations;
+10. export dữ liệu;
+11. hoạt động tốt trong production khi bật sampling;
+12. hoạt động tốt trong benchmark/debug mode;
+13. chạy được trên Unity và .NET;
+14. tránh reflection và runtime code generation trên hot path;
+15. ưu tiên Source Generator + compile-time instrumentation;
+16. có kiến trúc adapter/plugin để mở rộng SQL/Redis/HTTP/Unity/etc.
+
+==================================================
+I. CORE DESIGN PRINCIPLES
+==================================================
+
+Hãy tuân thủ các nguyên tắc sau.
+
+### 1. API chính phải là scope-based using API
+
+Developer-facing API ưu tiên:
+
+using (Perf.Measure("Login"))
+{
+    await LoginAsync();
+}
+
+hoặc:
+
+using (Perf.Measure())
+{
+    DoSomething();
+}
+
+Có thể hỗ trợ:
+
+using var scope = Perf.Measure("Login");
+
+nhưng block-based using phải là API documentation/recommended usage chính.
+
+KHÔNG sử dụng:
+
+Perf.Start("Login");
+...
+Perf.Stop("Login");
+
+làm API chính.
+
+Lý do:
+
+- exception-safe;
+- early return-safe;
+- nesting tự nhiên;
+- async-friendly;
+- lifecycle rõ ràng;
+- compiler đảm bảo Dispose;
+- developer nhìn code là biết measurement boundary nằm ở đâu.
+
+Perf.Measure() phải trả về một struct/class scope disposable phù hợp với mục tiêu zero/minimal allocation.
+
+Ưu tiên:
+
+ref struct nếu phù hợp với constraint thực tế.
+
+Nếu ref struct không phù hợp với async hoặc required lifecycle, thiết kế một abstraction khác phù hợp.
+
+Không được hy sinh async correctness chỉ để đạt zero allocation.
+
+==================================================
+II. CORE MENTAL MODEL
+==================================================
+
+Framework phải phân biệt rõ:
+
+Measurement
+Profiling
+Tracing
+Metrics
+Monitoring
+Logging
+Benchmarking
+
+Không được trộn chúng thành một abstraction duy nhất.
+
+Thiết kế:
+
+Perf.Core
+    - timing
+    - scope
+    - operation identity
+    - trace context
+    - span
+    - parent/child relationship
+    - lifecycle
+    - clock abstraction
+    - exception state
+    - status
+    - tags/metadata
+
+Perf.Runtime
+    - runtime context
+    - AsyncLocal-based context propagation
+    - sampling
+    - configuration
+    - recorder
+    - lifecycle management
+
+Perf.Abstractions
+    - interfaces
+    - adapter contracts
+    - exporters
+    - instrumentation contracts
+
+Perf.SourceGenerator
+    - compile-time instrumentation
+    - automatic operation naming
+    - method instrumentation
+
+Perf.Benchmark
+    - benchmark-oriented execution
+    - warmup
+    - iterations
+    - statistical result
+    - P50/P90/P95/P99/etc.
+
+Perf.Tracing
+    - hierarchical spans
+    - trace tree
+    - parent-child relationship
+    - timeline
+
+Perf.Metrics
+    - counters
+    - histograms
+    - latency distributions
+    - aggregation
+
+Perf.Exporters
+    - JSON
+    - CSV
+    - OpenTelemetry-compatible export where appropriate
+
+Perf.Sql
+    - SQL instrumentation
+
+Perf.Redis
+    - Redis instrumentation
+
+Perf.Net
+    - HTTP/network instrumentation
+
+Perf.Unity
+    - Unity-specific instrumentation
+
+Perf.AspNetCore
+    - ASP.NET Core integration
+
+Tên project có thể thay đổi nếu bạn có lý do kiến trúc tốt hơn, nhưng phải giữ separation of concerns.
+
+==================================================
+III. MOST IMPORTANT FEATURE:
+OUTER SCOPE + AUTOMATIC INNER MAPPING
+==================================================
+
+Đây là requirement quan trọng nhất.
+
+Ví dụ developer viết:
+
+using (Perf.Measure("Player:GetPlayer"))
+{
+    await GetPlayer();
+}
+
+Framework KHÔNG được chỉ trả về:
+
+Player:GetPlayer = 47ms
+
+Framework phải có khả năng tự tạo hierarchical trace:
+
+Player:GetPlayer       47.82 ms
+├── GetPlayer           45.21 ms
+│   ├── SQL              31.42 ms
+│   ├── Deserialize       2.17 ms
+│   ├── InventoryService  11.86 ms
+│   └── Redis              3.41 ms
+└── ...
+
+Developer không cần viết:
+
+using (Perf.Measure("SQL"))
+{
+    ...
+}
+
+cho từng operation nếu adapter/instrumentation đã có khả năng tự phát hiện.
+
+Mục tiêu:
+
+ONE OUTER WRAPPER
+        ↓
+AUTOMATIC INNER INSTRUMENTATION
+        ↓
+HIERARCHICAL PERFORMANCE TREE
+
+==================================================
+IV. TRACE MODEL
+==================================================
+
+Mỗi operation/span nên có concept tương đương:
+
+TraceId
+SpanId
+ParentSpanId
+OperationId
+OperationName
+StartTimestamp
+EndTimestamp
+Duration
+CPU Time nếu khả thi
+ThreadId
+Status
+Exception
+Allocation
+GC information nếu khả thi
+WaitReason
+Tags
+Metadata
+
+OperationId phải được ưu tiên hơn string trên hot path.
+
+Ví dụ:
+
+OperationId = uint/ulong/hash/generated ID
+
+Display layer:
+
+OperationId → "Player:GetPlayer"
+
+Không nên liên tục allocate string:
+
+"Player:GetPlayer"
+
+trên hot path.
+
+==================================================
+V. OPERATION NAMING
+==================================================
+
+Framework phải hỗ trợ automatic canonical naming.
+
+Ví dụ:
+
+Assembly.Namespace.Type.Method
+
+hoặc một canonical format hợp lý hơn.
+
+Ví dụ:
+
+GameServer.Player.PlayerService.GetPlayerAsync
+
+Framework phải có khả năng:
+
+- lấy method metadata ở compile-time;
+- generate OperationId;
+- generate operation name;
+- tránh reflection runtime nếu có thể.
+
+Nếu Source Generator có thể generate:
+
+OperationId
+OperationName
+Instrumentation wrapper
+
+thì ưu tiên cách đó.
+
+==================================================
+VI. SOURCE GENERATOR
+==================================================
+
+Source Generator là thành phần rất quan trọng.
+
+Thiết kế để developer có thể instrument method bằng:
+
+[Perf]
+
+hoặc một mechanism tương tự.
+
+Nhưng:
+
+Developer KHÔNG nên bắt buộc annotate mọi method.
+
+Framework phải có khả năng instrument theo:
+
+- attribute;
+- assembly configuration;
+- namespace;
+- type;
+- method pattern;
+- known adapter;
+- generated instrumentation.
+
+Ví dụ:
+
+[Perf]
+public async Task<Player> GetPlayerAsync(...)
+{
+    ...
+}
+
+Source Generator có thể transform thành logic tương đương:
+
+using (Perf.MeasureGenerated(...))
+{
+    ...
+}
+
+NHƯNG:
+
+Không được implement bằng runtime reflection/proxy/dynamic code generation trên hot path nếu có thể tránh.
+
+Unity IL2CPP/AOT compatibility là requirement quan trọng.
+
+Không được phụ thuộc vào JIT/runtime dynamic code generation.
+
+==================================================
+VII. ASYNC CORRECTNESS
+==================================================
+
+Đây là requirement bắt buộc.
+
+Framework phải hoạt động chính xác:
+
+using (Perf.Measure("Login"))
+{
+    await LoginAsync();
+}
+
+Context phải sống xuyên qua:
+
+await
+Task
+TaskScheduler
+ThreadPool
+SynchronizationContext
+UniTask
+
+Không được dùng ThreadLocal<T> làm trace context chính.
+
+Ưu tiên AsyncLocal<T> hoặc một abstraction tương đương phù hợp.
+
+Phải nghiên cứu:
+
+- ExecutionContext;
+- AsyncLocal;
+- async state machine;
+- thread switching;
+- ConfigureAwait;
+- Task.Run;
+- Parallel;
+- UniTask.
+
+Cần có test chứng minh:
+
+Thread A
+    ↓
+await
+    ↓
+Thread B
+    ↓
+child span vẫn có ParentSpanId đúng.
+
+==================================================
+VIII. WAIT REASON
+==================================================
+
+Framework phải phân biệt được loại thời gian đang bị tiêu tốn.
+
+Thiết kế enum hoặc equivalent:
+
+None
+Sql
+Http
+Redis
+FileIO
+Network
+Lock
+Semaphore
+Channel
+Task
+ThreadPool
+UnityAsyncOperation
+Addressables
+AssetBundle
+Unknown
+
+Không tuyên bố rằng framework có thể tự động biết chính xác mọi wait reason.
+
+Nếu không thể xác định chính xác:
+
+WaitReason = Unknown
+
+hoặc adapter phải explicitly report.
+
+Không được fake data.
+
+==================================================
+IX. WALL CLOCK VS CPU TIME
+==================================================
+
+Phải phân biệt:
+
+Wall-clock duration
+
+và
+
+CPU time
+
+Ví dụ:
+
+Operation:
+100ms wall-clock
+
+nhưng CPU:
+10ms
+
+có thể nghĩa là operation dành phần lớn thời gian chờ I/O.
+
+Framework phải thiết kế abstraction để support:
+
+WallDuration
+CpuDuration
+
+nhưng phải ghi rõ platform limitations.
+
+Đặc biệt:
+
+- Windows
+- Linux
+- Android
+- iOS
+- Unity Mono
+- Unity IL2CPP
+
+Không được giả định API CPU-time hoạt động giống nhau trên mọi platform.
+
+==================================================
+X. ALLOCATION / GC
+==================================================
+
+Framework phải hỗ trợ đo:
+
+AllocatedBytes
+GC collections
+Gen0
+Gen1
+Gen2
+
+hoặc equivalent phù hợp runtime.
+
+Nhưng phải phân biệt:
+
+- allocation của operation;
+- allocation của profiler/framework itself;
+- GC caused by operation;
+- cumulative process allocation.
+
+Framework không được tự tạo allocation lớn chỉ để đo allocation.
+
+Phải có benchmark:
+
+Measurement OFF
+Measurement ON
+
+và tính overhead.
+
+==================================================
+XI. STATISTICS
+==================================================
+
+Mỗi operation aggregation nên có:
+
+Count
+Min
+Max
+Average
+Median
+P50
+P90
+P95
+P99
+StdDev
+
+Có thể bổ sung:
+
+P99.9
+
+Histograms phải được thiết kế phù hợp.
+
+Không chỉ lưu toàn bộ samples nếu không cần thiết.
+
+Ưu tiên:
+
+Histogram / streaming aggregation
+
+thay vì:
+
+List<double> tất cả samples.
+
+Phải xem xét memory overhead.
+
+==================================================
+XII. SAMPLING
+==================================================
+
+Production mode không được trace mọi thứ mặc định.
+
+Thiết kế modes:
+
+Disabled
+Light
+Sampled
+Full
+Debug
+Benchmark
+
+Ví dụ policy:
+
+normal request:
+1% sampling
+
+slow request > 500ms:
+100%
+
+exception:
+100%
+
+Framework phải hỗ trợ sampling decision từ parent trace.
+
+Nếu parent không được sample thì child không nên tự ý tạo full trace nếu policy không cho phép.
+
+==================================================
+XIII. CONFIGURATION
+==================================================
+
+Thiết kế:
+
+PerfOptions
+
+Ví dụ:
+
+Enabled
+Mode
+SamplingRate
+SlowThreshold
+CaptureAllocations
+CaptureCpuTime
+CaptureThreadInfo
+CaptureExceptions
+MaxDepth
+MaxSpansPerTrace
+Exporter
+Filters
+
+Không được đọc configuration bằng reflection mỗi operation.
+
+Configuration phải được cache.
+
+==================================================
+XIV. ADAPTER ARCHITECTURE
+==================================================
+
+Framework Core không được phụ thuộc vào:
+
+Unity
+ASP.NET
+Redis
+MySQL
+HttpClient
+
+Thay vào đó:
+
+Perf.Core
+    ↓
+Perf.Abstractions
+    ↓
+Adapters
+
+Ví dụ:
+
+Perf.Sql
+Perf.Redis
+Perf.Net
+Perf.Unity
+Perf.AspNetCore
+
+SQL adapter có thể tự tạo:
+
+SQL.Query
+
+HTTP adapter:
+
+HTTP.GET
+HTTP.POST
+
+Redis:
+
+Redis.GET
+Redis.SET
+
+Unity:
+
+Unity.Update
+Unity.LateUpdate
+Unity.AsyncOperation
+Unity.Addressables.LoadAsset
+etc.
+
+==================================================
+XV. SQL
+==================================================
+
+SQL instrumentation phải có khả năng capture:
+
+Database
+Command
+Operation
+Duration
+Rows affected nếu available
+Parameters policy
+
+CỰC KỲ QUAN TRỌNG:
+
+Không log sensitive parameter data mặc định.
+
+Phải có redaction/masking policy.
+
+Không được biến framework thành data-leak mechanism.
+
+==================================================
+XVI. HTTP
+==================================================
+
+HTTP instrumentation:
+
+HttpClient
+request method
+URL template
+status code
+duration
+request size nếu available
+response size nếu available
+exception
+retry count nếu framework biết
+
+Không log secrets:
+
+Authorization
+Cookie
+API keys
+tokens
+
+URL phải có khả năng normalize để tránh cardinality explosion.
+
+Ví dụ:
+
+/player/12345
+
+nên trở thành:
+
+/player/{id}
+
+nếu instrumentation có template information.
+
+==================================================
+XVII. REDIS
+==================================================
+
+Support:
+
+GET
+SET
+MGET
+MSET
+DEL
+etc.
+
+Capture:
+
+operation
+duration
+success
+exception
+server endpoint nếu phù hợp
+
+Không capture payload mặc định.
+
+==================================================
+XVIII. FILE I/O / NETWORK
+==================================================
+
+Thiết kế adapter cho:
+
+File.Read
+File.Write
+Stream.Read
+Stream.Write
+Network operations
+
+Phân biệt:
+
+duration
+bytes
+throughput
+
+Ví dụ:
+
+100 MB / 2 seconds
+≈ 50 MB/s
+
+==================================================
+XIX. LOCK / SYNCHRONIZATION
+==================================================
+
+Framework cần có khả năng instrument:
+
+lock
+Monitor
+SemaphoreSlim
+Mutex
+ReaderWriterLockSlim
+Channel
+ConcurrentQueue
+
+Nếu automatic instrumentation không khả thi thì thiết kế explicit APIs:
+
+using (Perf.MeasureWait("Semaphore.Wait"))
+{
+    await semaphore.WaitAsync();
+}
+
+hoặc equivalent.
+
+Phải phân biệt:
+
+execution time
+wait time
+
+==================================================
+XX. THREADPOOL / TASK
+==================================================
+
+Framework nên expose metrics:
+
+ThreadPool worker threads
+available threads
+queue delay nếu có thể
+task duration
+task wait
+
+Không được claim rằng Task duration = CPU time.
+
+==================================================
+XXI. UNITY
+==================================================
+
+Unity integration phải là adapter riêng.
+
+Phải xem xét:
+
+Unity ProfilerMarker
+Profiler.BeginSample/EndSample
+CustomSampler
+Time.realtimeSinceStartup
+Stopwatch
+GC.GetAllocatedBytesForCurrentThread
+UnityEngine.Profiling
+Unity Profiler APIs
+PlayerLoop
+AsyncOperation
+Addressables
+AssetBundle
+Jobs
+Burst
+
+Framework phải hỗ trợ:
+
+using (Perf.Measure("Load Scene"))
+{
+    ...
+}
+
+và có thể map xuống Unity ProfilerMarker nếu phù hợp.
+
+Không được biến Perf.Core thành Unity-dependent.
+
+Unity adapter phải tương thích với:
+
+Mono
+IL2CPP
+AOT
+
+==================================================
+XXII. BENCHMARK MODE
+==================================================
+
+Benchmark khác profiling.
+
+Benchmark API có thể có dạng:
+
+Perf.Benchmark(...)
+
+hoặc:
+
+Perf.RunBenchmark(...)
+
+Benchmark phải hỗ trợ:
+
+warmup
+iterations
+min
+max
+mean
+median
+P95
+P99
+StdDev
+allocation
+GC
+
+Phải tránh benchmark sai do:
+
+JIT warmup
+cache warmup
+Unity domain reload
+GC
+CPU frequency scaling
+background processes
+first-request initialization
+
+Nếu framework dùng BenchmarkDotNet integration thì thiết kế integration thay vì reinvent toàn bộ engine nếu hợp lý.
+
+==================================================
+XXIII. EXPORT
+==================================================
+
+Thiết kế exporter abstraction:
+
+IPerfExporter
+
+Ví dụ:
+
+JsonExporter
+CsvExporter
+ConsoleExporter
+OpenTelemetryExporter
+
+Không hard-code Grafana.
+
+Grafana/Tempo/Jaeger nên được xem là consumer/backend.
+
+Framework nên có khả năng export OpenTelemetry-compatible data nếu hợp lý.
+
+==================================================
+XXIV. OUTPUT MODEL
+==================================================
+
+Console output tối thiểu:
+
+Player:GetPlayer
+Total: 47.82 ms
+
+├── SQL.Query
+│   Duration: 31.42 ms
+│
+├── Deserialize
+│   Duration: 2.17 ms
+│
+├── InventoryService
+│   Duration: 11.86 ms
+│
+└── Redis.GET
+    Duration: 3.41 ms
+
+Statistics:
+
+Count: 10,000
+Min: 12.1 ms
+Avg: 31.4 ms
+P50: 29.2 ms
+P95: 51.8 ms
+P99: 72.4 ms
+Max: 120.4 ms
+
+Alloc:
+
+Avg: 3.2 KB
+Max: 14.8 KB
+
+==================================================
+XXV. DATA MODEL
+==================================================
+
+Thiết kế immutable hoặc low-mutation models khi phù hợp.
+
+Ví dụ:
+
+PerfTrace
+PerfSpan
+PerfSample
+PerfMetric
+PerfStatistics
+PerfOperation
+PerfContext
+
+Nhưng KHÔNG được overengineer.
+
+Mỗi abstraction phải có lý do.
+
+==================================================
+XXVI. HOT PATH PERFORMANCE
+==================================================
+
+Framework itself phải được benchmark.
+
+Đây là requirement cực kỳ quan trọng.
+
+Benchmark:
+
+1. empty code
+2. Stopwatch
+3. Perf.Measure disabled
+4. Perf.Measure enabled
+5. nested Perf.Measure
+6. async Perf.Measure
+7. allocation capture
+8. sampling
+9. exporter disabled
+10. exporter enabled
+
+Đo:
+
+- ns/op
+- allocations
+- bytes/op
+- GC
+- throughput
+
+Mục tiêu:
+
+When disabled:
+
+Perf.Measure()
+
+phải có overhead cực thấp.
+
+Không được tạo object/string allocation vô nghĩa.
+
+==================================================
+XXVII. OPERATION ID
+==================================================
+
+Không dùng string làm identity chính.
+
+Thiết kế:
+
+OperationId
+
+có thể là:
+
+uint
+ulong
+
+hoặc strongly typed ID.
+
+Registry:
+
+OperationId → OperationMetadata
+
+Metadata:
+
+Name
+Namespace
+Type
+Method
+Assembly
+Category
+
+Registry có thể được generate compile-time.
+
+==================================================
+XXVIII. NESTING
+==================================================
+
+Ví dụ:
+
+using (Perf.Measure("A"))
+{
+    using (Perf.Measure("B"))
+    {
+        using (Perf.Measure("C"))
+        {
+            ...
+        }
+    }
+}
+
+Trace:
+
+A
+└── B
+    └── C
+
+Nếu B/C được auto-instrumented thì không cần developer viết using thủ công.
+
+==================================================
+XXIX. EXCEPTION
+==================================================
+
+Nếu:
+
+using (Perf.Measure("Login"))
+{
+    await LoginAsync();
+}
+
+ném exception:
+
+Scope phải tự:
+
+- mark failed;
+- capture exception metadata;
+- stop timer;
+- restore parent context;
+- export/record according to policy;
+- rethrow exception.
+
+Framework KHÔNG được swallow exception.
+
+==================================================
+XXX. CANCELLATION
+==================================================
+
+Phải hỗ trợ:
+
+CancellationToken
+
+và phân biệt:
+
+Success
+Failed
+Canceled
+
+nếu có thể.
+
+==================================================
+XXXI. CONTEXT RESTORATION
+==================================================
+
+Nested scopes phải restore đúng parent:
+
+Parent A
+    Child B
+        Child C
+    Child D
+
+Sau C:
+
+current = B
+
+Sau B:
+
+current = A
+
+Sau D:
+
+current = A
+
+Không được làm hỏng AsyncLocal state.
+
+==================================================
+XXXII. CONCURRENCY
+==================================================
+
+Framework phải thread-safe.
+
+Test:
+
+100
+1,000
+10,000
+
+concurrent operations.
+
+Phải tránh global lock trong hot path.
+
+Ưu tiên:
+
+lock-free / thread-local / concurrent structures
+
+nếu hợp lý.
+
+==================================================
+XXXIII. CARDINALITY
+==================================================
+
+Tags/metadata không được cho phép cardinality explosion.
+
+Không tạo metric riêng cho:
+
+UserId
+PlayerId
+RequestId
+GUID
+
+nếu aggregation system không phù hợp.
+
+Phải có distinction:
+
+Trace attribute
+
+vs
+
+Metric label.
+
+==================================================
+XXXIV. SECURITY
+==================================================
+
+Framework phải có:
+
+redaction
+masking
+allowlist/denylist
+
+Không capture mặc định:
+
+password
+token
+JWT
+Authorization
+Cookie
+API key
+SQL sensitive parameters
+
+==================================================
+XXXV. PROJECT STRUCTURE
+==================================================
+
+Đề xuất solution:
+
+PerfFramework.sln
+
+src/
+    Perf.Core/
+    Perf.Abstractions/
+    Perf.Runtime/
+    Perf.SourceGenerator/
+    Perf.Benchmark/
+    Perf.Tracing/
+    Perf.Metrics/
+    Perf.Exporters/
+    Perf.Net/
+    Perf.Sql/
+    Perf.Redis/
+    Perf.Unity/
+    Perf.AspNetCore/
+
+tests/
+    Perf.Core.Tests/
+    Perf.Runtime.Tests/
+    Perf.SourceGenerator.Tests/
+    Perf.Benchmark.Tests/
+    Perf.Tracing.Tests/
+    Perf.Metrics.Tests/
+    Perf.IntegrationTests/
+
+benchmarks/
+    Perf.OverheadBenchmarks/
+
+samples/
+    Console.Sample/
+    AspNetCore.Sample/
+    Sql.Sample/
+    Redis.Sample/
+    Unity.Sample/
+
+docs/
+    architecture/
+    api/
+    benchmarks/
+    integrations/
+
+==================================================
+XXXVI. IMPLEMENTATION STRATEGY
+==================================================
+
+KHÔNG implement tất cả một lúc.
+
+Thực hiện theo phases.
+
+PHASE 1:
+
+Perf.Core
+
+Implement:
+
+OperationId
+PerfScope
+Perf.Measure()
+PerfContext
+PerfSpan
+Clock abstraction
+Parent-child relationship
+Exception handling
+Dispose lifecycle
+
+Phải chạy được:
+
+using (Perf.Measure("Root"))
+{
+    ...
+}
+
+PHASE 2:
+
+Async Context
+
+Implement:
+
+AsyncLocal
+async/await propagation
+nested async scopes
+Task.Run
+ThreadPool
+
+PHASE 3:
+
+Recorder
+
+Implement:
+
+In-memory recorder
+span tree
+statistics
+
+PHASE 4:
+
+Source Generator
+
+Implement:
+
+[Perf]
+automatic method instrumentation
+generated OperationId
+generated names
+
+PHASE 5:
+
+Metrics
+
+Implement:
+
+histogram
+P50
+P90
+P95
+P99
+StdDev
+allocation
+GC
+
+PHASE 6:
+
+Adapters
+
+HTTP
+SQL
+Redis
+File I/O
+
+PHASE 7:
+
+Unity
+
+ProfilerMarker
+GC
+AsyncOperation
+Addressables
+PlayerLoop
+Unity-specific instrumentation
+
+PHASE 8:
+
+Exporters
+
+JSON
+CSV
+OpenTelemetry
+
+PHASE 9:
+
+Benchmark
+
+BenchmarkDotNet integration where appropriate.
+
+PHASE 10:
+
+Dashboard / visualization
+
+Tree
+Timeline
+Flame graph
+Statistics
+Trace details
+
+==================================================
+XXXVII. TEST-FIRST REQUIREMENT
+==================================================
+
+Mỗi phase phải có tests.
+
+Ít nhất:
+
+PerfScopeTests
+NestedScopeTests
+AsyncScopeTests
+ExceptionTests
+CancellationTests
+ThreadSwitchTests
+ConcurrencyTests
+SamplingTests
+StatisticsTests
+AllocationTests
+SourceGeneratorTests
+ExporterTests
+AdapterTests
+
+Phải có integration tests.
+
+==================================================
+XXXVIII. REQUIRED DEMOS
+==================================================
+
+Tạo demo:
+
+Example 1:
+
+using (Perf.Measure("Login"))
+{
+    await LoginAsync();
+}
+
+Example 2:
+
+using (Perf.Measure("Load Player"))
+{
+    var player = await repository.GetPlayerAsync(id);
+}
+
+Example 3:
+
+SQL
+
+Example 4:
+
+HTTP
+
+Example 5:
+
+Redis
+
+Example 6:
+
+Unity Addressables
+
+Example 7:
+
+Nested async
+
+Example 8:
+
+ThreadPool
+
+Example 9:
+
+SemaphoreSlim
+
+Example 10:
+
+Channel<T>
+
+==================================================
+XXXIX. ARCHITECTURAL DECISION RECORD
+==================================================
+
+Trong quá trình implement, tạo ADR document cho các quyết định quan trọng:
+
+ADR-001 Scope-based API
+ADR-002 AsyncLocal context
+ADR-003 OperationId
+ADR-004 Source Generator
+ADR-005 Adapter architecture
+ADR-006 Sampling
+ADR-007 Histogram
+ADR-008 Unity AOT compatibility
+ADR-009 OpenTelemetry
+ADR-010 Allocation strategy
+
+Mỗi ADR phải giải thích:
+
+Problem
+Decision
+Alternatives
+Trade-offs
+Consequences
+
+==================================================
+XL. IMPORTANT: DO NOT OVERENGINEER
+==================================================
+
+Không được tự động thêm:
+
+DI container
+event bus
+message broker
+database
+distributed storage
+web dashboard
+distributed tracing backend
+
+nếu chưa cần.
+
+Core phải nhỏ.
+
+Mỗi dependency phải có lý do.
+
+==================================================
+XLI. IMPORTANT: DO NOT FAKE CAPABILITIES
+==================================================
+
+Nếu platform/runtime không cho phép đo chính xác:
+
+- CPU time
+- lock wait
+- allocation
+- GC
+- network throughput
+
+thì phải:
+
+1. phát hiện limitation;
+2. ghi rõ limitation;
+3. cung cấp best-effort implementation;
+4. không giả mạo số liệu.
+
+==================================================
+XLII. DOCUMENTATION STYLE
+==================================================
+
+Documentation phải giải thích từ:
+
+WHY
+
+→ WHAT
+
+→ HOW
+
+→ INTERNAL IMPLEMENTATION
+
+→ PERFORMANCE COST
+
+→ LIMITATIONS
+
+Ví dụ phải giải thích:
+
+Tại sao AsyncLocal?
+
+Tại sao không ThreadLocal?
+
+Tại sao Source Generator?
+
+Tại sao không Reflection?
+
+Tại sao OperationId thay vì string?
+
+Tại sao using?
+
+Tại sao Histogram?
+
+==================================================
+XLIII. DEVELOPMENT RULE
+==================================================
+
+Trước khi viết code:
+
+1. Inspect repository hiện tại.
+2. Nếu repository đã có code, không overwrite bừa.
+3. Xác định target frameworks.
+4. Xác định Unity version nếu có.
+5. Kiểm tra package dependencies.
+6. Xác định build constraints.
+7. Tạo architecture document.
+8. Tạo implementation plan.
+9. Sau đó mới implement.
+
+Không hỏi tôi những câu hỏi không cần thiết.
+
+Nếu có ambiguity:
+
+- chọn phương án architecture hợp lý nhất;
+- ghi lại assumption;
+- tiếp tục implement.
+
+Chỉ hỏi tôi khi ambiguity có thể làm thay đổi fundamental architecture.
+
+==================================================
+XLIV. QUALITY BAR
+==================================================
+
+Code phải đạt mức production-quality.
+
+Yêu cầu:
+
+- clean architecture;
+- SOLID nhưng không overengineer;
+- thread-safe;
+- async-safe;
+- low allocation;
+- AOT-friendly;
+- testable;
+- extensible;
+- observable;
+- benchmarked.
+
+Không viết code demo throwaway.
+
+==================================================
+XLV. FINAL DELIVERABLE
+==================================================
+
+Sau khi hoàn thành mỗi phase phải report:
+
+1. Files created
+2. Files modified
+3. Architecture decisions
+4. API usage
+5. Tests
+6. Benchmark results
+7. Allocation overhead
+8. Known limitations
+9. Next phase
+
+Cuối cùng phải có:
+
+README.md
+
+Architecture.md
+
+Performance.md
+
+Integration.md
+
+GettingStarted.md
+
+ADR documents
+
+Benchmark report
+
+==================================================
+XLVI. FIRST TASK
+==================================================
+
+KHÔNG bắt đầu bằng dashboard.
+
+KHÔNG bắt đầu bằng SQL.
+
+KHÔNG bắt đầu bằng Unity.
+
+Hãy bắt đầu bằng:
+
+PERF CORE
+
+Thiết kế và implement contract chính:
+
+Perf.Measure()
+PerfScope
+PerfContext
+PerfSpan
+OperationId
+ParentSpanId
+Async context
+Clock
+Recorder
+
+Mục tiêu đầu tiên:
+
+Code:
+
+using (Perf.Measure("Root"))
+{
+    using (Perf.Measure("Child"))
+    {
+        DoWork();
+    }
+}
+
+phải tạo được:
+
+Root
+└── Child
+
+với:
+
+TraceId
+SpanId
+ParentSpanId
+OperationId
+Start
+End
+Duration
+Status
+
+Sau đó chứng minh:
+
+using (Perf.Measure("Root"))
+{
+    await Task.Delay(100);
+
+    await SomeAsyncOperation();
+}
+
+vẫn giữ đúng hierarchy sau await/thread switch.
+
+Sau khi Core pass tests, mới tiếp tục phase tiếp theo.
+
+==================================================
+XLVII. MOST IMPORTANT API CONTRACT
+==================================================
+
+API cuối cùng phải hướng tới trải nghiệm:
+
+using (Perf.Measure("Player:GetPlayer"))
+{
+    await GetPlayerAsync();
+}
+
+Developer chỉ định:
+
+"đây là boundary tôi muốn đo"
+
+Framework chịu trách nhiệm:
+
+"bên trong boundary này đã xảy ra những operation gì và mỗi operation tốn bao nhiêu."
+
+Đây là nguyên tắc kiến trúc cốt lõi của toàn bộ project.
+
+Bắt đầu bằng việc inspect repository và lập architecture proposal.
+
+KHÔNG implement dashboard trước.
+
+KHÔNG bỏ qua benchmark overhead của chính framework.
+
+KHÔNG biến framework thành Stopwatch wrapper.

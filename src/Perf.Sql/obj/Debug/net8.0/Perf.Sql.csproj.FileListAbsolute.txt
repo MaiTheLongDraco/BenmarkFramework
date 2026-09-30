@@ -1,0 +1,15 @@
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.csproj.AssemblyReference.cache
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.AssemblyInfoInputs.cache
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.AssemblyInfo.cs
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.csproj.CoreCompileInputs.cache
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\bin\Debug\net8.0\Perf.Sql.deps.json
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\bin\Debug\net8.0\Perf.Sql.dll
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\bin\Debug\net8.0\Perf.Sql.pdb
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\bin\Debug\net8.0\Perf.Core.dll
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\bin\Debug\net8.0\Perf.Core.pdb
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.csproj.Up2Date
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.dll
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\refint\Perf.Sql.dll
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.pdb
+c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\ref\Perf.Sql.dll

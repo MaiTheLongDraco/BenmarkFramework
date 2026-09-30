@@ -1,0 +1,15 @@
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.csproj.AssemblyReference.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.AssemblyInfoInputs.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.AssemblyInfo.cs
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\bin\Debug\net8.0\Perf.AspNetCore.deps.json
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\bin\Debug\net8.0\Perf.AspNetCore.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\bin\Debug\net8.0\Perf.AspNetCore.pdb
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\bin\Debug\net8.0\Perf.Core.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\bin\Debug\net8.0\Perf.Core.pdb
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.Asp.F3D3712A.Up2Date
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\refint\Perf.AspNetCore.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.pdb
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\ref\Perf.AspNetCore.dll

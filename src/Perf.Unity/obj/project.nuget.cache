@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "IGbwDUM2/Vo=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Unity\\Perf.Unity.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\system.threading.channels\\8.0.0\\system.threading.channels.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

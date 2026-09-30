@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Cg5XqFJRAWE=",
+  "success": true,
+  "projectFilePath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\system.threading.channels\\8.0.0\\system.threading.channels.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

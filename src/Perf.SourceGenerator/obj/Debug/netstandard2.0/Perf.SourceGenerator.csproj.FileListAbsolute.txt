@@ -1,0 +1,10 @@
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\obj\Debug\netstandard2.0\Perf.SourceGenerator.csproj.AssemblyReference.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\obj\Debug\netstandard2.0\Perf.SourceGenerator.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\obj\Debug\netstandard2.0\Perf.SourceGenerator.AssemblyInfoInputs.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\obj\Debug\netstandard2.0\Perf.SourceGenerator.AssemblyInfo.cs
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\obj\Debug\netstandard2.0\Perf.SourceGenerator.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\bin\Debug\netstandard2.0\Perf.SourceGenerator.deps.json
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\bin\Debug\netstandard2.0\Perf.SourceGenerator.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\bin\Debug\netstandard2.0\Perf.SourceGenerator.pdb
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\obj\Debug\netstandard2.0\Perf.SourceGenerator.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.SourceGenerator\obj\Debug\netstandard2.0\Perf.SourceGenerator.pdb
