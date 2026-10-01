@@ -16,11 +16,11 @@ PerfFramework là một bộ công cụ đo lường hiệu năng (Telemetry & P
 
 PerfFramework đã được build sẵn thành các file `.dll` tối ưu hóa (`Release` build). Bạn có thể tìm thấy chúng trong thư mục `Releases/`.
 
-### Dành cho Unity 3D (Cài qua DLL)
+### Dành cho Unity 3D (Cài qua DLL + Script)
 1. Mở thư mục `Releases/Unity/` trong source code.
-2. Copy 2 file: `Perf.Core.dll` và `Perf.Unity.dll`.
-3. Paste vào thư mục `Assets/Plugins/PerfFramework/` trong dự án Unity của bạn.
-4. Unity sẽ tự động nhận diện thư viện. Bạn có thể gọi `using Perf.Core;` ngay lập tức.
+2. Copy **toàn bộ các file `.dll`** (như `System.Text.Json.dll`, `System.Threading.Channels.dll`, `Perf.Core.dll`...) và file **`PerfUnity.cs`**.
+3. Paste tất cả vào thư mục `Assets/Plugins/PerfFramework/` trong dự án Unity của bạn.
+4. Unity sẽ tự động nhận diện DLL cốt lõi và compile Script Adapter. Bạn có thể gọi `using Perf.Core;` ngay lập tức.
 
 ### Dành cho C# .NET Solutions (Cài qua Reference)
 Trong môi trường .NET truyền thống (Console, Web API, Worker), bạn không có thư mục `Plugins` có sẵn như Unity. Dưới đây là cách thực hiện:
@@ -203,25 +203,52 @@ await client.GetAsync("https://api.stripe.com/v1/customers");
 
 ---
 
-## 📊 Xuất Báo Cáo (HTML, JSON, CSV)
+## 📊 Hướng Dẫn Chi Tiết: Xuất Báo Cáo (HTML, JSON, CSV)
 
-Bạn muốn lưu lại vết Trace để phân tích trên Dashboard hoặc gửi cho bộ phận QA? 
+Sau khi code của bạn chạy và PerfFramework đã thu thập được các đầu mục đo lường (Spans), bạn có thể xuất dữ liệu đó ra các file báo cáo trực quan. Dưới đây là một ví dụ thực tế cực kỳ dễ hiểu từ A-Z.
 
-`csharp
+### Ví dụ hoàn chỉnh: Chạy code và xuất ra file HTML
+
+```csharp
+using Perf.Core;
+using Perf.Core.Tracing;
 using Perf.Core.Exporters;
 
-var trace = TraceBuilder.Build(listOfCollectedSpans);
+// 1. Dùng InMemoryRecorder để lưu tạm kết quả trên RAM
+var recorder = new InMemoryRecorder();
+Perf.Core.Perf.Recorder = recorder;
+Perf.Core.Perf.Options.Enabled = true;
 
-// Xuất file HTML dạng Gantt Chart
-var htmlExporter = new HtmlExporter("C:/Logs/Traces");
+// 2. Chạy thử một đoạn code (Có lồng nhau)
+using (Perf.Measure("Main_Process"))
+{
+    Thread.Sleep(10); // Giả lập tốn 10ms
+    using (Perf.Measure("Load_Data_From_DB"))
+    {
+        Thread.Sleep(40); // Giả lập tốn 40ms
+    }
+}
+
+// 3. Lấy dữ liệu thô (Spans) từ Recorder ra
+var spans = recorder.GetSpans();
+
+// 4. Xây dựng cây (Tree) lồng ghép cha-con từ danh sách thô
+var trace = TraceBuilder.Build(spans);
+
+// 5. Xuất ra file HTML giao diện Gantt Chart siêu đẹp
+var htmlExporter = new HtmlExporter("C:/Logs/Traces"); 
 await htmlExporter.ExportAsync(trace);
 
-// Xuất CSV
+// 6. (Tùy chọn) Xuất thêm ra file CSV nếu muốn import Excel
 var csvExporter = new CsvExporter("C:/Logs/traces.csv");
 await csvExporter.ExportAsync(trace);
-`
+```
 
-Mở file 	race_XYZ.html lên bằng trình duyệt, bạn sẽ thấy giao diện **Flame Graph (Gantt Chart)** cực kỳ trực quan với màu sắc, thời gian milli-giây (ms), và dung lượng RAM cấp phát (Bytes) trên mỗi đầu mục!
+**Thành quả:** 
+Mở thư mục `C:/Logs/Traces` lên, bạn sẽ thấy file có dạng `trace_xxxxxxxx.html`. Bấm đúp để mở trên trình duyệt Chrome/Edge, bạn sẽ thấy giao diện **Flame Graph (Gantt Chart)** tối màu cực ngầu. Thanh nào dài tốn nhiều thời gian, thanh nào lồng trong thanh nào, cấp phát bao nhiêu RAM (Bytes) đều hiển thị rõ khi bạn rê chuột vào!
+
+Dưới đây là hình ảnh Demo minh họa giao diện báo cáo sau khi xuất:
+![Demo Báo cáo PerfFramework Gantt Chart](C:\Users\Admin\.gemini\antigravity-ide\brain\4b8c3fe9-18c6-4b92-b2b6-dbd8d126d415\gantt_chart_demo_1790870456479.jpg)
 
 ---
 *Dự án PerfFramework - Sẵn sàng cho Production ở những hệ thống khắt khe nhất.*
