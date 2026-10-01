@@ -9,6 +9,7 @@ public sealed class PerfScope : IDisposable
     private readonly PerfContext? _parentContext;
     private readonly ISpanRecorder? _recorder;
     private bool _isDisposed;
+    private bool _hasCustomAllocatedBytes;
     
     // Starting metrics
     private readonly long _startAllocatedBytes;
@@ -88,12 +89,19 @@ public sealed class PerfScope : IDisposable
         return null; 
     }
 
-    // Public setter for manual exception tagging in Phase 1
     public void MarkFailed(Exception ex)
     {
         if (_isNoOp) return;
         _span.Status = SpanStatus.Failed;
         _span.Exception = ex;
+    }
+
+    // Public setter for Unity or custom alloc tracking
+    public void MarkAllocatedBytes(long bytes)
+    {
+        if (_isNoOp) return;
+        _span.AllocatedBytes = bytes;
+        _hasCustomAllocatedBytes = true;
     }
 
     public void Dispose()
@@ -108,7 +116,10 @@ public sealed class PerfScope : IDisposable
 
         if (Perf.Options.CaptureAllocations)
         {
-            _span.AllocatedBytes = GC.GetAllocatedBytesForCurrentThread() - _startAllocatedBytes;
+            if (!_hasCustomAllocatedBytes) 
+            {
+                _span.AllocatedBytes = GC.GetAllocatedBytesForCurrentThread() - _startAllocatedBytes;
+            }
             _span.Gen0Collections = GC.CollectionCount(0) - _startGen0;
             _span.Gen1Collections = GC.CollectionCount(1) - _startGen1;
             _span.Gen2Collections = GC.CollectionCount(2) - _startGen2;

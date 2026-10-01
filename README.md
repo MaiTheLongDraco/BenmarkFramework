@@ -117,6 +117,8 @@ app.MapGet("/api/users/{id}", async (int id) => {
 app.Run();
 `
 
+*Lưu ý: Sau khi gắn Middleware `app.UsePerf()`, ứng dụng web sẽ tự động sinh ra một Endpoint đặc biệt tại đường dẫn (ví dụ: `/perf/traces`). Khi bạn truy cập đường dẫn này thông qua Browser hoặc Postman, thư viện sẽ tự động trả về chuỗi JSON chứa toàn bộ cây Metric của server. Chức năng này cực kỳ tiện lợi để hiển thị dữ liệu lên trang Web Dashboard nội bộ của dự án!*
+
 ---
 
 ## 🎮 Hướng Dẫn Sử Dụng (Cho Unity 3D)
@@ -242,6 +244,18 @@ await htmlExporter.ExportAsync(trace);
 // 6. (Tùy chọn) Xuất thêm ra file CSV nếu muốn import Excel
 var csvExporter = new CsvExporter("C:/Logs/traces.csv");
 await csvExporter.ExportAsync(trace);
+
+// 7. (Tùy chọn) In trực tiếp ra Console dạng cây phân cấp (ConsoleTreeRenderer)
+var consoleRenderer = new ConsoleTreeRenderer();
+string treeText = consoleRenderer.Render(trace);
+Console.WriteLine(treeText);
+```
+
+**Thành quả trên Console:**
+Khi gọi `Console.WriteLine(treeText)`, bạn sẽ thấy ngay một sơ đồ trực quan như sau:
+```text
+Main_Process         50.21 ms
+└── Load_Data_From_DB    40.05 ms
 ```
 
 **Thành quả:** 

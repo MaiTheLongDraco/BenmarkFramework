@@ -121,23 +121,23 @@ public class HtmlExporter : IPerfExporter
         const container = document.getElementById('gantt');
         const tooltip = document.getElementById('tooltip');
         
-        if (!traceData.Root) return;
-        
-        // Find absolute min and max timestamps to scale
-        let minTs = traceData.Root.Span.StartTimestamp;
-        let maxTs = traceData.Root.Span.EndTimestamp;
-        
-        function findExtremes(node) {{
-            if (node.Span.StartTimestamp < minTs) minTs = node.Span.StartTimestamp;
-            if (node.Span.EndTimestamp > maxTs) maxTs = node.Span.EndTimestamp;
-            node.Children.forEach(c => findExtremes(c));
-        }}
-        findExtremes(traceData.Root);
-        
-        const totalDuration = maxTs - minTs;
-        if(totalDuration === 0) {{ container.innerHTML = 'Duration is zero.'; }}
-        
-        let rowHtml = '';
+        if (!traceData.Root) {{
+            container.innerHTML = 'No data available or empty trace.';
+        }} else {{
+            // Find absolute min and max timestamps to scale
+            let minTs = traceData.Root.Span.StartTimestamp;
+            let maxTs = traceData.Root.Span.EndTimestamp;
+            
+            function findExtremes(node) {{
+                if (node.Span.StartTimestamp < minTs) minTs = node.Span.StartTimestamp;
+                if (node.Span.EndTimestamp > maxTs) maxTs = node.Span.EndTimestamp;
+                node.Children.forEach(c => findExtremes(c));
+            }}
+            findExtremes(traceData.Root);
+            
+            const totalDuration = maxTs - minTs;
+            
+            let rowHtml = '';
         
         function drawNode(node, depth) {{
             const span = node.Span;
@@ -149,31 +149,36 @@ public class HtmlExporter : IPerfExporter
             
             const indent = depth * 20;
             
-            rowHtml += 
+            rowHtml += `
             <div class=""row"">
-                <div class=""label-col"" style=""padding-left: {{indent + 10}}px;"" title=""OpId: {{span.OperationId.Value}}"">
-                    Op {{span.OperationId.Value}}
+                <div class=""label-col"" style=""padding-left: ${{indent + 10}}px;"" title=""OpId: ${{span.OperationId.Value}}"">
+                    Op ${{span.OperationId.Value}}
                 </div>
                 <div class=""timeline-col"">
-                    <div class=""bar"" style=""left: {{startPct}}%; width: Math.max({{widthPct}}, 0.1)%;"" 
-                         onmouseover=""showTooltip(event, '{{span.SpanId.Value}}', '{{durMs}}', {{span.AllocatedBytes}})""
+                    <div class=""bar"" style=""left: ${{startPct}}%; width: ${{Math.max(widthPct, 0.1)}}%;"" 
+                         onmouseover=""showTooltip(event, '${{span.SpanId.Value}}', '${{durMs}}', ${{span.AllocatedBytes}})""
                          onmouseout=""hideTooltip()"">
-                         {{durMs}}
+                         ${{durMs}}
                     </div>
                 </div>
-            </div>;
+            </div>`;
             
             node.Children.forEach(c => drawNode(c, depth + 1));
         }}
         
-        drawNode(traceData.Root, 0);
-        container.innerHTML = rowHtml;
+            drawNode(traceData.Root, 0);
+            if(totalDuration === 0) {{ 
+                container.innerHTML = '<div style=""padding: 10px;"">Duration is zero. Only 1 point in time.</div>' + rowHtml; 
+            }} else {{
+                container.innerHTML = rowHtml;
+            }}
+        }}
         
         window.showTooltip = function(e, spanId, dur, alloc) {{
             tooltip.style.display = 'block';
             tooltip.style.left = e.pageX + 15 + 'px';
             tooltip.style.top = e.pageY + 15 + 'px';
-            tooltip.innerHTML = <strong>Span:</strong> {{spanId}}<br><strong>Duration:</strong> {{dur}}<br><strong>Allocated:</strong> {{alloc}} bytes;
+            tooltip.innerHTML = `<strong>Span:</strong> ${{spanId}}<br><strong>Duration:</strong> ${{dur}}<br><strong>Allocated:</strong> ${{alloc}} bytes`;
         }};
         
         window.hideTooltip = function() {{
