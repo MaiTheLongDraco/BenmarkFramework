@@ -1,4 +1,4 @@
-﻿# 🚀 PerfFramework - Khung Đo Lường Hiệu Năng Vô Cực (Zero-Allocation)
+# 🚀 PerfFramework - Khung Đo Lường Hiệu Năng Vô Cực (Zero-Allocation)
 
 PerfFramework là một bộ công cụ đo lường hiệu năng (Telemetry & Profiling) được thiết kế theo nguyên tắc tối giản (Simplicity First) của Andrej Karpathy. Nó tập trung vào sự tinh gọn, không cấp phát bộ nhớ (Zero-Allocation) trên hot path, hoàn toàn tương thích với AOT (Ahead-Of-Time) biên dịch và IL2CPP của Unity.
 
@@ -9,6 +9,39 @@ PerfFramework là một bộ công cụ đo lường hiệu năng (Telemetry & P
 - **Micro-Benchmark Engine**: Tích hợp sẵn bộ đo overhead siêu nhẹ với Warmup phase.
 - **Bảo Mật PII**: Tự động bóc tách và ẩn giấu các thông tin nhạy cảm (Thẻ tín dụng, JWT, Email).
 - **Xuất Báo Cáo Đa Dạng**: Xuất Console Tree, JSON, CSV và HTML Gantt Chart Timeline cực kỳ trực quan.
+
+---
+
+## 📦 Cài Đặt & Tích Hợp (Installation)
+
+PerfFramework đã được build sẵn thành các file `.dll` tối ưu hóa (`Release` build). Bạn có thể tìm thấy chúng trong thư mục `Releases/`.
+
+### Dành cho Unity 3D (Cài qua DLL)
+1. Mở thư mục `Releases/Unity/` trong source code.
+2. Copy 2 file: `Perf.Core.dll` và `Perf.Unity.dll`.
+3. Paste vào thư mục `Assets/Plugins/PerfFramework/` trong dự án Unity của bạn.
+4. Unity sẽ tự động nhận diện thư viện. Bạn có thể gọi `using Perf.Core;` ngay lập tức.
+
+### Dành cho C# .NET Solutions (Cài qua Reference)
+Trong môi trường .NET truyền thống (Console, Web API, Worker), bạn không có thư mục `Plugins` có sẵn như Unity. Dưới đây là cách thực hiện:
+
+1. **Copy DLLs:** Tạo một thư mục `libs` hoặc `Dependencies` ở ngay trong dự án của bạn (cùng cấp với file `.csproj` hoặc `.sln`). Copy các file `.dll` từ thư mục `Releases/DotNet/` của mã nguồn này vào thư mục `libs` vừa tạo.
+2. **Chọn DLL cần thiết:**
+   - **`Perf.Core.dll`**: (Bắt buộc) - Chứa logic cốt lõi. Mọi project đều cần file này.
+   - **`Perf.AspNetCore.dll`**: (Tùy chọn) - Lấy file này nếu dự án của bạn là Web API/MVC (chứa `app.UsePerf()`).
+   - **`Perf.Sql.dll`**: (Tùy chọn) - Nếu dự án của bạn có kết nối Database (Entity Framework, Dapper).
+   - **`Perf.Net.dll`**: (Tùy chọn) - Nếu dự án của bạn có dùng `HttpClient` để gọi API bên ngoài.
+3. **Reference (Link DLL):**
+   - Mở Visual Studio hoặc Rider.
+   - Chuột phải vào **Dependencies** của dự án -> Chọn **Add Project Reference...** -> **Browse** -> Tìm trỏ tới thư mục `libs` vừa tạo và tick chọn các file `.dll` ở trên.
+   - Hoặc sửa trực tiếp file `.csproj` bằng cách thêm:
+     ```xml
+     <ItemGroup>
+       <Reference Include="Perf.Core">
+         <HintPath>libs\Perf.Core.dll</HintPath>
+       </Reference>
+     </ItemGroup>
+     ```
 
 ---
 

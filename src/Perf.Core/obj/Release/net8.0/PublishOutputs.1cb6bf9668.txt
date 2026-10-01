@@ -1,0 +1,3 @@
+C:\Users\Admin\Documents\BenmarkFramework\Releases\DotNet\Perf.Core.dll
+C:\Users\Admin\Documents\BenmarkFramework\Releases\DotNet\Perf.Core.deps.json
+C:\Users\Admin\Documents\BenmarkFramework\Releases\DotNet\Perf.Core.pdb

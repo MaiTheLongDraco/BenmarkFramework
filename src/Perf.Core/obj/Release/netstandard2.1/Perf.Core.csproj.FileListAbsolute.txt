@@ -1,0 +1,11 @@
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Release\netstandard2.1\Perf.Core.csproj.AssemblyReference.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Release\netstandard2.1\Perf.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Release\netstandard2.1\Perf.Core.AssemblyInfoInputs.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Release\netstandard2.1\Perf.Core.AssemblyInfo.cs
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Release\netstandard2.1\Perf.Core.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Release\netstandard2.1\Perf.Core.sourcelink.json
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\bin\Release\netstandard2.1\Perf.Core.deps.json
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\bin\Release\netstandard2.1\Perf.Core.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\bin\Release\netstandard2.1\Perf.Core.pdb
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Release\netstandard2.1\Perf.Core.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Release\netstandard2.1\Perf.Core.pdb

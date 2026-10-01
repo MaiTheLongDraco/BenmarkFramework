@@ -33,6 +33,39 @@ PerfFramework là một bộ công cụ đo lường hiệu năng (Telemetry & P
 
 ---
 
+## 📦 Cài Đặt & Tích Hợp (Installation)
+
+PerfFramework đã được build sẵn thành các file `.dll` tối ưu hóa (`Release` build). Bạn có thể tìm thấy chúng trong thư mục `Releases/`.
+
+### Dành cho Unity 3D (Cài qua DLL)
+1. Mở thư mục `Releases/Unity/` trong source code.
+2. Copy 2 file: `Perf.Core.dll` và `Perf.Unity.dll`.
+3. Paste vào thư mục `Assets/Plugins/PerfFramework/` trong dự án Unity của bạn.
+4. Unity sẽ tự động nhận diện thư viện. Bạn có thể gọi `using Perf.Core;` ngay lập tức.
+
+### Dành cho C# .NET Solutions (Cài qua Reference)
+Trong môi trường .NET truyền thống (Console, Web API, Worker), bạn không có thư mục `Plugins` có sẵn như Unity. Dưới đây là cách thực hiện:
+
+1. **Copy DLLs:** Tạo một thư mục `libs` hoặc `Dependencies` ở ngay trong dự án của bạn (cùng cấp với file `.csproj` hoặc `.sln`). Copy các file `.dll` từ thư mục `Releases/DotNet/` của mã nguồn này vào thư mục `libs` vừa tạo.
+2. **Chọn DLL cần thiết:**
+   - **`Perf.Core.dll`**: (Bắt buộc) - Chứa logic cốt lõi. Mọi project đều cần file này.
+   - **`Perf.AspNetCore.dll`**: (Tùy chọn) - Lấy file này nếu dự án của bạn là Web API/MVC (chứa `app.UsePerf()`).
+   - **`Perf.Sql.dll`**: (Tùy chọn) - Nếu dự án của bạn có kết nối Database (Entity Framework, Dapper).
+   - **`Perf.Net.dll`**: (Tùy chọn) - Nếu dự án của bạn có dùng `HttpClient` để gọi API bên ngoài.
+3. **Reference (Link DLL):**
+   - Mở Visual Studio hoặc Rider.
+   - Chuột phải vào **Dependencies** của dự án -> Chọn **Add Project Reference...** -> **Browse** -> Tìm trỏ tới thư mục `libs` vừa tạo và tick chọn các file `.dll` ở trên.
+   - Hoặc sửa trực tiếp file `.csproj` bằng cách thêm:
+     ```xml
+     <ItemGroup>
+       <Reference Include="Perf.Core">
+         <HintPath>libs\Perf.Core.dll</HintPath>
+       </Reference>
+     </ItemGroup>
+     ```
+
+---
+
 ## 🛠️ Hướng Dẫn Sử Dụng (Cho C# .NET Solutions)
 
 ### 1. Cấu hình cơ bản (Program.cs)
@@ -212,7 +245,8 @@ await csvExporter.ExportAsync(trace);
 Mở file 	race_XYZ.html lên bằng trình duyệt, bạn sẽ thấy giao diện **Flame Graph (Gantt Chart)** cực kỳ trực quan với màu sắc, thời gian milli-giây (ms), và dung lượng RAM cấp phát (Bytes) trên mỗi đầu mục!
 
 ---
-*Dự án PerfFramework - Sẵn sàng cho Production ở những hệ thống khắt khe nhất.* -replace '', '\' -replace '\$', '\$');
+*Dự án PerfFramework - Sẵn sàng cho Production ở những hệ thống khắt khe nhất.*
+ -replace '', '\' -replace '\$', '\$');
         document.getElementById('content').innerHTML = marked.parse(markdown);
     </script>
 </body>

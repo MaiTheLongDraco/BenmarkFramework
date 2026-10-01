@@ -1,0 +1,14 @@
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\bin\Release\netstandard2.1\Perf.Unity.deps.json
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\bin\Release\netstandard2.1\Perf.Unity.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\bin\Release\netstandard2.1\Perf.Unity.pdb
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\bin\Release\netstandard2.1\Perf.Core.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\bin\Release\netstandard2.1\Perf.Core.pdb
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.csproj.AssemblyReference.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.AssemblyInfoInputs.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.AssemblyInfo.cs
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.sourcelink.json
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.csproj.Up2Date
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Unity\obj\Release\netstandard2.1\Perf.Unity.pdb

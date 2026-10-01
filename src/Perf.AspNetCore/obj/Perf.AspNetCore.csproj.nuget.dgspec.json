@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj": {}
+    "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj": {
+    "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj",
+        "projectUniqueName": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj",
         "projectName": "Perf.AspNetCore",
-        "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj",
+        "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\obj\\",
+        "outputPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj": {
-                "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj"
+              "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj": {
+                "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj"
               }
             }
           }
@@ -76,14 +76,14 @@
         }
       }
     },
-    "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj": {
+    "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj",
+        "projectUniqueName": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj",
         "projectName": "Perf.Core",
-        "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj",
+        "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\obj\\",
+        "outputPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
