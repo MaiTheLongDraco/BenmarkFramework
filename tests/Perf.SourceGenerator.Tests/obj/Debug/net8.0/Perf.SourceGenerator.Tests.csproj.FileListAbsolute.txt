@@ -129,3 +129,4 @@ c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.SourceGenerator.Tests\obj\D
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.SourceGenerator.Tests\obj\Debug\net8.0\Perf.SourceGenerator.Tests.pdb
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.SourceGenerator.Tests\obj\Debug\net8.0\Perf.SourceGenerator.Tests.genruntimeconfig.cache
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.SourceGenerator.Tests\obj\Debug\net8.0\ref\Perf.SourceGenerator.Tests.dll
+C:\Users\Admin\Documents\BenmarkFramework\tests\Perf.SourceGenerator.Tests\obj\Debug\net8.0\Perf.SourceGenerator.Tests.sourcelink.json

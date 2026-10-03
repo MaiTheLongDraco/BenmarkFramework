@@ -107,3 +107,4 @@ c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.IntegrationTests\obj\Debug\
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.IntegrationTests\bin\Debug\net8.0\Microsoft.AspNetCore.TestHost.dll
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.IntegrationTests\bin\Debug\net8.0\Perf.AspNetCore.dll
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.IntegrationTests\bin\Debug\net8.0\Perf.AspNetCore.pdb
+C:\Users\Admin\Documents\BenmarkFramework\tests\Perf.IntegrationTests\obj\Debug\net8.0\Perf.IntegrationTests.sourcelink.json

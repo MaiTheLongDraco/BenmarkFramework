@@ -59,6 +59,7 @@ public class AspNetCoreTests
         Assert.True(span.Duration.TotalMilliseconds >= 0);
         
         OperationRegistry.TryGetMetadata(span.OperationId, out var meta);
+        Assert.NotNull(meta);
         Assert.Equal("HTTP GET /api/test", meta.Name);
         Assert.Equal("HTTP.Server", meta.Category);
     }

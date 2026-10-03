@@ -148,6 +148,10 @@
         "netstandard2.1": {
           "targetAlias": "netstandard2.1",
           "dependencies": {
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[8.0.5, )"
+            },
             "System.Threading.Channels": {
               "target": "Package",
               "version": "[8.0.0, )"

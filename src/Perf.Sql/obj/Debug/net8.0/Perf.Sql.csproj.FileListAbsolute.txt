@@ -13,3 +13,4 @@ c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\refint\Perf.Sql.dll
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.pdb
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\ref\Perf.Sql.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Sql\obj\Debug\net8.0\Perf.Sql.sourcelink.json

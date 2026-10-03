@@ -5540,11 +5540,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.Core.Tests\\Perf.Core.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.Core.Tests\\Perf.Core.Tests.csproj",
       "projectName": "Perf.Core.Tests",
-      "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.Core.Tests\\Perf.Core.Tests.csproj",
+      "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.Core.Tests\\Perf.Core.Tests.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.Core.Tests\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.Core.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -5565,8 +5565,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj": {
-              "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj"
+            "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj": {
+              "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj"
             }
           }
         }

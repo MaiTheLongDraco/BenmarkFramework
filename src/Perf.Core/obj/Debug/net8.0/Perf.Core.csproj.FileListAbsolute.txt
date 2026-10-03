@@ -9,3 +9,4 @@ c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Debug\net8.0\Perf.Co
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Debug\net8.0\refint\Perf.Core.dll
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Debug\net8.0\Perf.Core.pdb
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Debug\net8.0\ref\Perf.Core.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Core\obj\Debug\net8.0\Perf.Core.sourcelink.json

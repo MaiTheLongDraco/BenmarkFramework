@@ -13,3 +13,4 @@ C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\P
 C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\refint\Perf.AspNetCore.dll
 C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.pdb
 C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\ref\Perf.AspNetCore.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.AspNetCore\obj\Debug\net8.0\Perf.AspNetCore.sourcelink.json

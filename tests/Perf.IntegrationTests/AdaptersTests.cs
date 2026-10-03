@@ -41,6 +41,7 @@ public class AdaptersTests
         Assert.Equal(rootSpan.SpanId, httpSpan.ParentSpanId);
         
         OperationRegistry.TryGetMetadata(httpSpan.OperationId, out var opMeta);
+        Assert.NotNull(opMeta);
         Assert.Equal("HTTP.Request", opMeta.Name);
     }
 
@@ -66,6 +67,7 @@ public class AdaptersTests
         var lockSpan = spans.Single(s => s.ParentSpanId != null);
         
         OperationRegistry.TryGetMetadata(lockSpan.OperationId, out var opMeta);
+        Assert.NotNull(opMeta);
         Assert.Equal("Lock.SemaphoreSlim", opMeta.Name);
     }
 

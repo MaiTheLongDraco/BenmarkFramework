@@ -101,3 +101,4 @@ c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.Core.Tests\obj\Debug\net8.0
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.Core.Tests\obj\Debug\net8.0\Perf.Core.Tests.genruntimeconfig.cache
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.Core.Tests\obj\Debug\net8.0\ref\Perf.Core.Tests.dll
 c:\Users\Admin\Documents\BenmarkFramework\tests\Perf.Core.Tests\bin\Debug\net8.0\xunit.runner.json
+C:\Users\Admin\Documents\BenmarkFramework\tests\Perf.Core.Tests\obj\Debug\net8.0\Perf.Core.Tests.sourcelink.json

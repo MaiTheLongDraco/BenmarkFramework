@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Perf.Core;
 
@@ -21,9 +22,14 @@ public static class OperationRegistry
         return id;
     }
 
-    public static bool TryGetMetadata(OperationId id, out OperationMetadata metadata)
+    public static bool TryGetMetadata(OperationId id, [NotNullWhen(true)] out OperationMetadata? metadata)
     {
         return _idToMetadata.TryGetValue(id, out metadata);
+    }
+    
+    public static System.Collections.Generic.IEnumerable<OperationMetadata> GetAllMetadata()
+    {
+        return _idToMetadata.Values;
     }
     
     private static ulong CalculateFnv1a64(string text)

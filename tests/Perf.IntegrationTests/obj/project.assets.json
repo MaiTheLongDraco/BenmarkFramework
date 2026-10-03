@@ -5670,11 +5670,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.IntegrationTests\\Perf.IntegrationTests.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.IntegrationTests\\Perf.IntegrationTests.csproj",
       "projectName": "Perf.IntegrationTests",
-      "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.IntegrationTests\\Perf.IntegrationTests.csproj",
+      "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.IntegrationTests\\Perf.IntegrationTests.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.IntegrationTests\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\tests\\Perf.IntegrationTests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -5695,17 +5695,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj": {
-              "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj"
+            "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj": {
+              "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.AspNetCore\\Perf.AspNetCore.csproj"
             },
-            "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj": {
-              "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj"
+            "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj": {
+              "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Core\\Perf.Core.csproj"
             },
-            "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Net\\Perf.Net.csproj": {
-              "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Net\\Perf.Net.csproj"
+            "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Net\\Perf.Net.csproj": {
+              "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Net\\Perf.Net.csproj"
             },
-            "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Sql\\Perf.Sql.csproj": {
-              "projectPath": "c:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Sql\\Perf.Sql.csproj"
+            "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Sql\\Perf.Sql.csproj": {
+              "projectPath": "C:\\Users\\Admin\\Documents\\BenmarkFramework\\src\\Perf.Sql\\Perf.Sql.csproj"
             }
           }
         }

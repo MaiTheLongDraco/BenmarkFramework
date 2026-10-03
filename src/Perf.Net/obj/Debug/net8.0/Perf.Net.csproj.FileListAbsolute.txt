@@ -13,3 +13,4 @@ c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\refint\Perf.Net.dll
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.pdb
 c:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\ref\Perf.Net.dll
+C:\Users\Admin\Documents\BenmarkFramework\src\Perf.Net\obj\Debug\net8.0\Perf.Net.sourcelink.json

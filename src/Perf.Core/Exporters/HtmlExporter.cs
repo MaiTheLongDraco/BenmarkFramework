@@ -21,6 +21,8 @@ public class HtmlExporter : IPerfExporter
         string filePath = Path.Combine(_outputDirectory, $"trace_{trace.TraceId}.html");
         
         string traceJson = JsonSerializer.Serialize(trace, PerfTraceJsonContext.Default.PerfTrace);
+        var metadataList = OperationRegistry.GetAllMetadata();
+        string metaJson = JsonSerializer.Serialize(metadataList);
 
         string htmlContent = $@"
 <!DOCTYPE html>
@@ -28,85 +30,167 @@ public class HtmlExporter : IPerfExporter
 <head>
     <meta charset=""UTF-8"">
     <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
     <title>PerfTrace: {trace.TraceId}</title>
+    <link href=""https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"" rel=""stylesheet"">
     <style>
         :root {{
-            --bg: #1e1e1e;
-            --text: #d4d4d4;
-            --border: #333;
-            --bar-bg: #007acc;
-            --bar-hover: #0098ff;
+            --bg: #0d1117;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-primary: #e6edf3;
+            --text-secondary: #848d97;
+            --bar-bg: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            --bar-glow: rgba(59, 130, 246, 0.4);
         }}
+        
         body {{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            color: var(--text);
+            background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.1), transparent 40%);
+            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
+            min-height: 100vh;
         }}
-        .header {{ margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }}
+        
+        .header {{ 
+            margin-bottom: 30px;
+            text-align: center;
+        }}
+        
+        .header h2 {{
+            font-weight: 600;
+            font-size: 24px;
+            margin: 0;
+            background: -webkit-linear-gradient(#fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }}
+        
         .gantt-container {{
             position: relative;
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--border);
+            border-radius: 12px;
             overflow-x: auto;
+            overflow-y: hidden;
             min-height: 400px;
+            max-width: 1400px;
+            margin: 0 auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }}
+        
         .row {{
             position: relative;
-            height: 30px;
-            border-bottom: 1px dashed #2a2a2a;
+            height: 44px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
+            transition: background-color 0.2s ease;
         }}
-        .row:hover {{ background-color: #2a2d2e; }}
+        
+        .row:last-child {{
+            border-bottom: none;
+        }}
+        
+        .row:hover {{ 
+            background-color: var(--surface-hover); 
+        }}
+        
         .label-col {{
-            width: 300px;
-            min-width: 300px;
+            width: 320px;
+            min-width: 320px;
             border-right: 1px solid var(--border);
-            padding-left: 10px;
+            padding-left: 20px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             z-index: 10;
-            background: var(--bg);
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
         }}
+        
         .timeline-col {{
             flex-grow: 1;
             position: relative;
+            height: 100%;
         }}
+        
         .bar {{
             position: absolute;
-            height: 20px;
-            background-color: var(--bar-bg);
-            border-radius: 3px;
+            height: 24px;
+            top: 10px;
+            background: var(--bar-bg);
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s;
             display: flex;
             align-items: center;
-            padding: 0 5px;
+            padding: 0 10px;
             box-sizing: border-box;
             font-size: 11px;
+            font-weight: 600;
+            color: #fff;
             overflow: hidden;
             white-space: nowrap;
+            box-shadow: 0 4px 12px var(--bar-glow);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s;
         }}
-        .bar:hover {{ background-color: var(--bar-hover); }}
+        
+        .bar:hover {{ 
+            transform: scaleY(1.1);
+            filter: brightness(1.2);
+        }}
+        
         .tooltip {{
             display: none;
             position: absolute;
-            background: #252526;
-            border: 1px solid #454545;
-            padding: 10px;
-            border-radius: 5px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 16px;
+            border-radius: 8px;
             z-index: 100;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
             font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            pointer-events: none;
+        }}
+        
+        .tooltip strong {{
+            color: #fff;
+            font-weight: 600;
+        }}
+        
+        ::-webkit-scrollbar {{
+            width: 10px;
+            height: 10px;
+        }}
+        ::-webkit-scrollbar-track {{
+            background: var(--bg);
+        }}
+        ::-webkit-scrollbar-thumb {{
+            background: #334155;
+            border-radius: 5px;
+        }}
+        ::-webkit-scrollbar-thumb:hover {{
+            background: #475569;
         }}
     </style>
 </head>
 <body>
     <div class=""header"">
-        <h2>Trace: {trace.TraceId}</h2>
+        <h2>Performance Trace Analysis</h2>
+        <div style=""color: var(--text-secondary); font-size: 14px; margin-top: 8px;"">ID: {trace.TraceId}</div>
     </div>
     
     <div class=""gantt-container"" id=""gantt""></div>
@@ -115,8 +199,13 @@ public class HtmlExporter : IPerfExporter
     <script>
         const traceData = {traceJson};
         
-        let operationMeta = {{}};
-        // Ideally we would dump the OperationRegistry here too, but for simplicity, we mock generic names.
+        // Build metadata lookup object
+        const operationMeta = {{}};
+        const metaList = {metaJson};
+        for (const meta of metaList) {{
+            operationMeta[meta.Id.Value] = meta.Name;
+        }}
+        
         
         const container = document.getElementById('gantt');
         const tooltip = document.getElementById('tooltip');
@@ -149,16 +238,18 @@ public class HtmlExporter : IPerfExporter
             
             const indent = depth * 20;
             
+            const opName = operationMeta[span.OperationId.Value] || ('Op ' + span.OperationId.Value);
+            
             rowHtml += `
             <div class=""row"">
-                <div class=""label-col"" style=""padding-left: ${{indent + 10}}px;"" title=""OpId: ${{span.OperationId.Value}}"">
-                    Op ${{span.OperationId.Value}}
+                <div class=""label-col"" style=""padding-left: ${{indent + 10}}px;"" title=""${{opName}}"">
+                    ${{opName}}
                 </div>
                 <div class=""timeline-col"">
                     <div class=""bar"" style=""left: ${{startPct}}%; width: ${{Math.max(widthPct, 0.1)}}%;"" 
                          onmouseover=""showTooltip(event, '${{span.SpanId.Value}}', '${{durMs}}', ${{span.AllocatedBytes}})""
                          onmouseout=""hideTooltip()"">
-                         ${{durMs}}
+                         ${{durMs}} | ${{span.AllocatedBytes}} B
                     </div>
                 </div>
             </div>`;

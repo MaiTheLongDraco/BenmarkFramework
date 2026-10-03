@@ -13,6 +13,12 @@ namespace UnityEngine.Profiling
         public void Begin() { }
         public void End() { }
     }
+
+    public static class Profiler
+    {
+        public static void BeginSample(string name) { }
+        public static void EndSample() { }
+    }
 }
 #endif
 
@@ -51,6 +57,29 @@ namespace Perf.Unity
                 return new ProfilerMarker(meta.Name);
             }
             return new ProfilerMarker("Unknown");
+        }
+
+        public static IDisposable Measure(string operationName, string? category = null)
+        {
+            UnityEngine.Profiling.Profiler.BeginSample(operationName);
+            var coreScope = Perf.Core.Perf.Measure(operationName, category);
+            return new UnityScopeWrapper(coreScope);
+        }
+
+        private class UnityScopeWrapper : IDisposable
+        {
+            private readonly IDisposable _inner;
+
+            public UnityScopeWrapper(IDisposable inner)
+            {
+                _inner = inner;
+            }
+
+            public void Dispose()
+            {
+                _inner.Dispose();
+                UnityEngine.Profiling.Profiler.EndSample();
+            }
         }
     }
 }
