@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Perf.Net")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8a6c5289db2757e69906585c444cc9e12a92cecb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+59a83fb0126af0fd4cf325716aa733a86c00acd9")]
 [assembly: System.Reflection.AssemblyProductAttribute("Perf.Net")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Perf.Net")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
